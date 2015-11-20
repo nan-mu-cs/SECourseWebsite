@@ -1,0 +1,15 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block BodyBlock%}
+<h1>登录</h1>
+    <form id="login_form" method="post" action="Login">
+            {% csrf_token %}
+            用户名: <input type="text" name="username" value="" size="50" />
+            <br />
+            密码: <input type="password" name="password" value="" size="50" />
+            <br />
+            <input type="radio" name="user_type" size="50" value="Teacher"/> 教师
+            <input type="radio" name="user_type" size="50" value="Student"/> 学生
+            <input type="submit" value="submit" />
+        </form>
+{% endblock %}
