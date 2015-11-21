@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -22,7 +23,7 @@ class NoticeMessage(models.Model):
         return self.message
 
 def coursematerials_upload_directory_path(instance,filename):
-        return 'coursemeterials/user_{0}_{1}'.format(instance.user.username,filename)
+        return u'coursemeterials/user_{0}_{1}'.format(instance.user.username,filename)
 class mCourseMaterials(models.Model):
     user = models.ForeignKey(User)
     title = models.CharField(max_length=256)
