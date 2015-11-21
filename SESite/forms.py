@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django import forms
 from django.contrib.auth.models import User
 from SESite.models import Person
@@ -14,3 +16,8 @@ class PersonProfile(forms.ModelForm):
     class Meta:
         model = Person
         fields = ('idnum','type')
+
+class CourseMaterialsForm(forms.Form):
+    docfile = forms.FileField(
+        label='请选择文件'
+    )

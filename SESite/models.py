@@ -20,3 +20,16 @@ class NoticeMessage(models.Model):
         db_table = 'NoticeMessage'
     def __unicode__(self):
         return self.message
+
+def coursematerials_upload_directory_path(instance,filename):
+        return 'coursemeterials/user_{0}_{1}'.format(instance.user.username,filename)
+class mCourseMaterials(models.Model):
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=256)
+    upload_time = models.DateTimeField(auto_now_add=True)
+    docfile = models.FileField(upload_to=coursematerials_upload_directory_path)
+    class Meta:
+        db_table = 'CourseMaterials'
+    def __unicode__(self):
+        return self.docfile.name
+

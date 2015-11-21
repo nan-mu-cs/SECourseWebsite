@@ -5,13 +5,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
-from SESite.forms import PersonUserForm, PersonProfile
-from SESite.models import NoticeMessage
+from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm
+from SESite.models import NoticeMessage, mCourseMaterials
 
 TEACHER = 1
 STUDENT = 2
@@ -147,7 +149,7 @@ def NoticeBoard(request):
                     query = None
             except MultiValueDictKeyError:
                 #单纯刷新网页，所以不会GET到deleteid
-                messageid = 0
+                messageid = None
     #数据库中现在存在的所有message都get出来
     result = []
     message_list = NoticeMessage.objects.all()
@@ -157,3 +159,56 @@ def NoticeBoard(request):
         result.append(res)
     result.reverse()
     return render(request,"NoticeBoard.html",{'message':result})
+
+def CourseMaterials(request):
+    '''用来处理资料上传、下载'''
+    '''判断老师可以上传资料'''
+    if request.user.has_perm("SESite.can_teach"):
+        '''通过表单上传文件'''
+        if request.method == 'POST':
+            '''获得表单'''
+            form = CourseMaterialsForm(request.POST,request.FILES)
+            '''检查表单合法性'''
+            if form.is_valid():
+                '''将数据存入数据库，会自动存储文件'''
+                newdoc = mCourseMaterials(user=request.user,docfile=request.FILES['docfile'],title=request.FILES['docfile'].name)
+                newdoc.save()
+                return HttpResponseRedirect('CourseMaterials')
+        elif request.method == 'GET':
+            '''get方法可能是刷新网页，也可能是删除'''
+            try:
+                '''如果是删除，获取删除文件id'''
+                fileid = request.GET['deleteid']
+                try:
+                    '''从数据库中删掉，若记录不存在抛出mCourseMaterials.DoesNotExist异常'''
+                    query = mCourseMaterials.objects.get(id=fileid).delete()
+                except mCourseMaterials.DoesNotExist:
+                    query = None
+            except MultiValueDictKeyError:
+                fileid = None
+    '''普通用GET方法获取网页'''
+    form = CourseMaterialsForm()
+    documents = mCourseMaterials.objects.all()
+    return render(request,'CourseMaterials.html',{'documents':documents,'form':form})
+
+@receiver(pre_delete, sender=mCourseMaterials)
+def mCourseMaterials_delete(sender, instance, **kwargs):
+    '''删除文件记录时，会接收文件删除信号，同时删除实际存在的文件'''
+    # Pass false so FileField doesn't save the model.
+    instance.docfile.delete(False)
+
+
+def CourseMaterials_preview(request,fileid):
+    try:
+        docfile = mCourseMaterials.objects.get(id=fileid)
+        return pdf_preview(request,docfile.docfile._get_path())
+    except mCourseMaterials.DoesNotExist:
+        docfile = None
+        return HttpResponseRedirect('CourseMaterials.html')
+
+def pdf_preview(request,filepath):
+    with open(filepath,'r') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+    pdf.closed

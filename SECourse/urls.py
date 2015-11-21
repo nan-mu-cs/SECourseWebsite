@@ -14,7 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
+from SECourse import settings
 from SESite import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -24,4 +26,6 @@ urlpatterns = [
     url(r'^Logout',views.Logout,name="Logout"),
     url(r'^nopremission',views.NoPermission,name="NoPermission"),
     url(r'^NoticeBoard$',views.NoticeBoard,name="NoticeBoard"),
-]
+    url(r'^CourseMaterials$',views.CourseMaterials,name="CourseMaterials"),
+    url(r'^CourseMaterialspdfpreview(?P<fileid>\d+)$',views.CourseMaterials_preview,name="pdf_preview"),
+]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
