@@ -1,0 +1,78 @@
+
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset = "utf-8"/>
+    <title>课程介绍</title>
+    <style type="text/css">
+        #container-1 .pre_intro{ 
+            width: 50%;
+            height: 300px;
+            margin: 20px;
+            display: block;
+            /*background-color: #ddd;*/
+
+        }
+        #container-1 .pre_intro textarea{display: block; margin-bottom: 10px;}
+        #container-1 .pre_intro .submit{margin-left: 120px;}
+        #container-1 label{margin-left: 150px;}
+    </style>
+</head>
+<body>
+    <!-- inherit the attribute -->
+    {% include 'MainTemplate.html' %}
+
+
+    <!-- if teacher, show the textarea -->
+    {% if perms.SESite.can_teach %}
+    <div id="container-1">
+        <!-- course requirement to relase -->
+        <div class="pre_intro">
+            <form method="POST" class="CourseIntro" action="CourseIntro">
+            {% csrf_token %}
+                <p>预修要求</p>
+                <textarea class="text" name="PreCourseRequire"></textarea>
+
+                <p>课程教材</p>
+                <textarea class="text1" name="Material"></textarea>
+
+                <p>分数构成</p>
+                <textarea class="text2" name="Score" ></textarea>
+
+                <input type="submit" class="submit"/>
+            </form>
+        </div>
+    {% endif %}
+
+    <!-- show the result of the introduce of the course -->
+    <div id="container-2">
+        <!-- pre-courses requirement -->
+        <div class="message_list">
+        <ul>
+            {% for item in pre_intro %}
+            <li>
+                <p>预修要求</p>
+                <ul>{{ item.2 }}<li>By TA.{{ item.1 }}</li></ul>
+            </li>
+            
+            <br/>
+            <li>
+                <p>课程教材</p> 
+                <ul>{{ item.3 }}<li>By TA.{{ item.1 }}</li></ul>
+            </li>
+
+            <br/>
+            <li><p>分数构成</p>
+                <ul>{{ item.4 }}<li>By TA.{{ item.1 }}</li></ul>
+            </li>
+        </ul>
+                {% if perms.SESite.can_teach %}<label><a href="ScoreConsti?deleteid={{ item.0 }}">删除</a></label>{% endif %}
+            {% endfor %}
+        </ul>
+        </div>
+</body>
+</html> 

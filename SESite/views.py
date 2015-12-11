@@ -13,7 +13,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
 from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm
-from SESite.models import NoticeMessage, mCourseMaterials
+from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro
 
 TEACHER = 1
 STUDENT = 2
@@ -212,3 +212,80 @@ def pdf_preview(request,filepath):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
     pdf.closed
+def Course_Intro(request):
+    if request.user.has_perm("SESite.can_teach"):
+        if request.method == 'POST':
+
+            CourseIntro.objects.create(writer=request.user,pre_intro=request.POST['PreCourseRequire'],materi_intro=request.POST['Material'],score_consti=request.POST['Score'])
+            # print pre_intro
+            # print message
+            # print score_consti
+            # print materi_intro
+            print 'demo'
+        #如果是GET，可能是刷新网页，也可能是点了删除链接,score_consti=request['Score'],materi_intro=request.POST['Material'],message=request['msg']
+        elif request.method == 'GET':
+            try:
+                #删除信息
+                pre_introid = request.GET['deleteid']
+                # print 'pre_introid = ' + pre_introid3
+                try:
+                    #数据库中查询
+                    query = CourseIntro.objects.get(id=pre_introid).delete()
+                except CourseIntro.DoesNotExist:
+                    #查询结果为空会抛出异常，需要在异常中处理
+                    query = None
+            except MultiValueDictKeyError:
+                #单纯刷新网页，所以不会GET到deleteid/
+                pre_introid = 0
+
+    result = []
+    message_list = CourseIntro.objects.all()
+    message_list.order_by('post_time')
+    # 每次刷新或者输入新的预修要求，会显示最新的要求，历史依旧存在数据库当中
+    for item in message_list:
+        res = [item.id, item.writer.username, item.pre_intro, item.materi_intro, item.score_consti]
+        result.append(res)
+    # result.reverse()
+    print '******************'
+    print result
+    print '******************'
+    return render(request,"CourseIntro.html", {'pre_intro': result})
+
+def TA_Intro(request):
+    if request.user.has_perm("SESite.can_teach"):
+        if request.method == 'POST':
+
+            TAIntro.objects.create(writer=request.user,teacher_intro=request.POST['teacher_msg'],ta_intro=request.POST['ta_msg'])
+            # print pre_intro
+            # print message
+            # print score_consti
+            # print materi_intro
+            print 'demo'
+        #如果是GET，可能是刷新网页，也可能是点了删除链接,score_consti=request['Score'],materi_intro=request.POST['Material'],message=request['msg']
+        elif request.method == 'GET':
+            try:
+                #删除信息
+                teacher_introid = request.GET['deleteid']
+                # print 'pre_introid = ' + pre_introid3
+                try:
+                    #数据库中查询
+                    query = TAIntro.objects.get(id=teacher_introid).delete()
+                except TAIntro.DoesNotExist:
+                    #查询结果为空会抛出异常，需要在异常中处理
+                    query = None
+            except MultiValueDictKeyError:
+                #单纯刷新网页，所以不会GET到deleteid
+                teacher_introid = 0
+
+    result = []
+    message_list = TAIntro.objects.all()
+    message_list.order_by('post_time')
+    # 每次刷新或者输入新的预修要求，会显示最新的要求，历史依旧存在数据库当中
+    for item in message_list:
+        res = [item.id, item.writer.username, item.teacher_intro, item.ta_intro]
+        result.append(res)
+    # result.reverse()
+    print '******************'
+    print result
+    print '******************'
+    return render(request,"TAIntro.html", {'teacher_intro': result})

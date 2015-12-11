@@ -1,0 +1,69 @@
+
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset = "utf-8"/>
+    <title>师资介绍</title>
+    <style type="text/css">
+        #container-1 .ta_intro{ 
+            width: 50%;
+            height: 300px;
+            margin: 20px;
+            display: block;
+            /*background-color: #ddd;*/
+        }
+        #container-1 .ta_intro textarea{display: block; margin-bottom: 10px;}
+        #container-1 .ta_intro .submit{margin-left: 120px;}
+        /*#container-2 {background-color: #ddd;display: block;}*/
+        /*#container-2 div,p,li,br,ul{display: block;}*/
+        #container-2 label{margin-left: 150px;}
+    </style>
+</head>
+<body>
+    <!-- inherit the attribute -->
+    {% include 'MainTemplate.html' %}
+
+    <!-- if teacher, show the textarea -->
+    {% if perms.SESite.can_teach %}
+    <div id="container-1">
+        <div class="ta_intro">
+            <form method="POST" class="TAIntro" action="TAIntro">
+            {% csrf_token %}
+                <p>任课教师信息录入</p>
+                <textarea class="text" name="teacher_msg"></textarea>
+
+                <p>助教信息录入</p>
+                <textarea class="text1" name="ta_msg"></textarea>
+
+                <input type="submit" class="submit"/>
+            </form>
+        </div>
+    {% endif %}
+    </div>
+
+    <div id="container-2">
+        <div class="message_list">
+        <ul>
+            {% for item in teacher_intro %}
+            <p>师资介绍</p>
+            <li>
+                <p>任课教师</p>
+                <ul>{{ item.2 }}<li>By TA.{{ item.1 }}</li></ul>
+            </li>
+            
+            <br/>
+            <li>
+                <p>助教</p> 
+                <ul>{{ item.3 }}<li>By TA.{{ item.1 }}</li></ul>
+            </li>
+                {% if perms.SESite.can_teach %}<label><a href="teacher_msg?deleteid={{ item.0 }}">删除</a></label>{% endif %}
+        </ul>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html> 

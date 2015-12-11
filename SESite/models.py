@@ -34,3 +34,23 @@ class mCourseMaterials(models.Model):
     def __unicode__(self):
         return self.docfile.name
 
+class CourseIntro(models.Model):
+    writer = models.ForeignKey(User)
+    pre_intro = models.CharField(max_length=2000)
+    materi_intro = models.CharField(max_length = 2000)
+    score_consti = models.CharField(max_length = 2000) 
+    post_time = models.DateTimeField(auto_now_add = True)
+    class Meta:
+        db_table = 'CourseIntro'
+    def __unicode__(self):
+        return self.pre_intro
+
+class TAIntro(models.Model):
+    writer = models.ForeignKey(User)
+    teacher_intro = models.CharField(max_length=2000)
+    ta_intro = models.CharField(max_length = 2000)
+    post_time = models.DateTimeField(auto_now_add = True)
+    class Meta:
+        db_table = 'TAIntro'
+    def __unicode__(self):
+        return self.teacher_intro

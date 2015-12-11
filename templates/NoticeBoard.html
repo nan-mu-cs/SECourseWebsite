@@ -3,38 +3,50 @@
 {% block Script_Block %}
 <!--<script src="/static/js/NoticeBoard.js"></script>-->
 {% endblock %}
+{% block NavNoticeBoard %}active{% endblock %}
 {% block BodyBlock%}
+ <div class="container ">
  {% if perms.SESite.can_teach %}
-     <form method="post" action="NoticeBoard">
-        {% csrf_token %}
-        <p>发布公告</p>
-         <textarea name="post_message"></textarea>
-        <input type="submit" value="提交公告"/>
+<form method="post" action="NoticeBoard">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+          <h1>发布公告</h1>
+            <div class="input-group-addon">
+             <textarea class="form-control" rows="3" name="post_message"></textarea>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            <span class="input-group-btn input-group-addon">
+               <input class="btn btn-default" type="submit" value="提交公告"/>
+             </span>
+        </div>
+    </div>
      </form>
  {% endif %}
-    <div class="message_list">
-     <ul>
+ <div class="row">
+    <div class="col-lg-offset-3 col-lg-6">
+    <div class="message_list list-group ">
          {% for item in message %}
-             <li>
-                <ul>
-                    <li>
-                        {{ item.2 }}
-                    </li>
-                     <li>
-                        {{ item.1 }}
-                    </li>
-                     <li>
-                        {{ item.3 }}
-                    </li>
+             <div class="list-group-item">
+                        <h4 class="h4 list-group-item-heading">{{ item.2 }}</h4>
+                        <p class="list-group-item-text pull-right">{{ item.1 }} {{ item.3 }} </p>
                     {% if perms.SESite.can_teach %}
-                        <li><a href="NoticeBoard?deleteid={{ item.0 }}">删除</a></li>
+                        <p class=""><a href="NoticeBoard?deleteid={{ item.0 }}">删除</a></p>
+                    {% else %}
+                        <p></p>
+                        <br/>
                     {% endif %}
                 </ul>
-             </li>
+             </div>
          {% endfor %}
-     </ul>
     </div>
-<script >
+</div>
+ </div>
+     </div>
+     <script >
 $(document).ready(function(){
     /*
     for( i = 0;i<message.length;i++){
