@@ -13,7 +13,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
 from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm
-from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro
+from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person
 
 TEACHER = 1
 STUDENT = 2
@@ -289,3 +289,22 @@ def TA_Intro(request):
     print result
     print '******************'
     return render(request,"TAIntro.html", {'teacher_intro': result})
+
+def Account_Info(request):
+    try:
+        account_data = Person.objects.get(user=request.user)
+    except Person.DoesNotExist:
+        account_data = None
+    return render(request,"AccountInfo.html",{"account_data":account_data})
+
+def Change_Account(request):
+    print request.POST
+    if request.POST['email_value'] != "":
+        User.objects.filter(username=request.user.username).update(email=request.POST['email_value'])
+    if request.POST['psw_value'] != "":
+        User.objects.filter(username=request.user.username).update(password=request.POST['psw_value'])
+    try:
+        account_data = Person.objects.get(user=request.user)
+    except Person.DoesNotExist:
+        account_data = None
+    return HttpResponse(account_data.user.email)

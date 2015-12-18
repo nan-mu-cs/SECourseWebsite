@@ -33,4 +33,6 @@ urlpatterns = [
     url(r'^TAIntro$', views.TA_Intro, name="TAIntro"),
     url(r'^teacher_msg$', views.TA_Intro, name="TAIntro"),
     url(r'^ta_msg$', views.TA_Intro, name="TAIntro"),
+    url(r'^AccountInfo$',views.Account_Info,name="AccountInfo"),
+    url(r'^change_account$',views.Change_Account,name="Change_Account"),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
