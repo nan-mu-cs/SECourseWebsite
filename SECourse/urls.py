@@ -18,8 +18,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from SECourse import settings
 from SESite import views
+from SESite.admin import admin_site
+admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^myadmin/', admin_site.urls),
     url(r'^$',views.index,name="index"),
     url(r'^Register$',views.Register,name="Register"),
     url(r'^Login',views.Login,name="Login"),
