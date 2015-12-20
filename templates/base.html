@@ -1,0 +1,29 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+   <div class="container">
+    <div class="jumbotron">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if request.path != '/forum' %}
+            <div id="breadcrumb">
+                {% block breadcrumb %}
+                    <a href="/">Main</a>
+                {% endblock breadcrumb %}
+            </div>
+        {% endif %}
+
+        <div id="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+{% endblock %}

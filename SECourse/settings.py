@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for SECourse project.
 
@@ -27,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = (
@@ -37,7 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'SESite',
+
+    'pybb',
+    'bootstrapform',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,6 +54,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
+    'pybb.middleware.PybbMiddleware',
 )
 
 ROOT_URLCONF = 'SECourse.urls'
@@ -65,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'pybb.context_processors.processor',
             ],
         },
     },
@@ -112,3 +121,12 @@ LOGIN_URL = ''
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+
+#PYBB_TEMPLATE = 'MainTemplate.html'
+PYBB_SMILES_PREFIX = '/static/emoticons/'
+#PYBB_MARKUP = 'bbcode'
+#PYBB_NICE_URL = True
+#PYBB_DEFAULT_TITLE = '课程论坛'
+#PYBB_NICE_URL_PERMANENT_REDIRECT = False
