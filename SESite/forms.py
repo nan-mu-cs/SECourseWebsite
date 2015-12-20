@@ -21,3 +21,7 @@ class CourseMaterialsForm(forms.Form):
     docfile = forms.FileField(
         label='请选择文件'
     )
+class HomeworkForm(forms.Form):
+    docfile = forms.FileField(
+        label='请选择文件,请勿超过100M'
+    )

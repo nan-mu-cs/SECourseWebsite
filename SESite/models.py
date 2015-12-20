@@ -54,3 +54,28 @@ class TAIntro(models.Model):
         db_table = 'TAIntro'
     def __unicode__(self):
         return self.teacher_intro
+
+class Homework(models.Model):
+    assigner = models.ForeignKey(User)
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=2000)
+    post_time = models.DateTimeField(auto_now_add=True)
+    due_time = models.DateTimeField(auto_now_add=False)
+    class Meta:
+        db_table = 'Homework'
+    def __unicode__(self):
+        return self.description
+
+def homework_upload_directory_path(instance,filename):
+        return u'homework/user_{0}_{1}_{2}'.format(instance.student_ID_id,filename,instance.homeworkid_id)
+
+class StudentHomework(models.Model):
+    student_ID = models.ForeignKey(User)
+    homeworkid = models.ForeignKey(Homework,to_field='id')
+    post_time = models.DateTimeField(auto_now_add=True)
+    homeworkfile = models.FileField(upload_to=homework_upload_directory_path)
+    score = models.DecimalField(max_digits=4,decimal_places=1)
+    class Meta:
+        db_table = 'StudentHomework'
+    def __unicode__(self):
+        return self.homeworkfile.name

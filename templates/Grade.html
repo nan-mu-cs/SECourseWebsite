@@ -1,0 +1,82 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+    <p>{{ user.username }},在这里你可以查看所有学生的每次作业成绩</p>
+    <div style="width:500px">
+    {% for item in StudentScore %}
+        <table class="table table-condensed table-bordered table-striped" width="700px">
+        <tr>
+        <td>
+            学生姓名:{{ item.1 }}
+        </td>
+        <td>
+            总分:{{ item.0 }}
+        </td>
+        </tr>
+        <tr>
+            <th>
+                题目ID
+            </th>
+            <th>
+                本题分数
+            </th>
+            <th>
+                修改分数
+            </th>
+        </tr>
+        {% for tube in HomeworkScore %}
+            <tr>
+                {% ifequal tube.1 item.1 %}
+                    <td width="40%">
+                        {{ tube.2 }}
+                    </td>
+                    <td width="30%">
+                        {{ tube.0 }}
+                    </td>
+                    <td width="30%">
+                        <form method="post" action="Grade" onsubmit="return validate_form(this)">
+                            {% csrf_token %}
+                            <input type="hidden" name="HomeworkID" value="{{ tube.3 }}"/>
+                            <input type="text" style="width: 50px" name="score"/>
+                            <input type="submit" value="提交"/>
+                        </form>
+                    </td>
+                {% endifequal %}
+            </tr>
+        {% endfor %}
+        </table>
+    {% endfor %}
+    </div>
+<script type="application/javascript">
+    function validate_required(field,alerttxt)
+{
+with (field)
+  {
+  if (value==null||value=="")
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+
+function score_validate(field,alerttxt)
+{
+with (field)
+  {
+  if (value>100)
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+function validate_form(thisform)
+{
+with (thisform)
+  {
+  if ((validate_required(score,"Score must be filled out!") == false) || (score_validate(score,"Score can't exceed 100") == false))
+    {score.focus();return false}
+  }
+}
+</script>
+{% endblock %}

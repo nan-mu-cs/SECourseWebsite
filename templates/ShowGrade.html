@@ -1,0 +1,30 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+    <p>{{ user.username }},在这里你可以查看每次作业成绩</p>
+    {% if message %}
+        <table border="1" cellpadding="50">
+        <thead>
+            <th>作业ID</th>
+            <th>作业分数</th>
+        </thead>
+        <tbody>
+            {% for score in message %}
+                <tr>
+                    <td>{{ score.0 }}</td>
+                    {% if score.1 == 0 %}
+                    <td>未批改</td>
+                    {% else %}
+                    <td>{{ score.1 }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+        <h4>当前没有可以显示的成绩</h4>
+    {% endif %}
+{% endblock %}

@@ -17,6 +17,15 @@
             <li class="{%block NavCourseMaterials  %}{% endblock %}"><a href="CourseMaterials">课程资料</a></li>
             <li class="{%block NavCourseIntro %}{% endblock %}"><a href="ScoreConsti">课程介绍</a></li>
             <li class="{%block NavTeacherIntro %}{% endblock %}"><a href="TAIntro">教师/助教介绍</a></li>
+            {% if user.is_authenticated %}
+                {% if perms.SESite.can_teach %}
+                    <li class="{%block NavAssignHomework %}{% endblock %}"><a href="AssignHomework">发布作业&批改成绩</a></li>
+                    <li class="{%block NavGrade %}{% endblock %}"><a href="Grade">管理成绩</a></li>
+                {% else %}
+                    <li class="{%block NavHomework %}{% endblock %}"><a href="HomeworkAndGrades">查看作业</a></li>
+                    <li class="{%block NavShowGrade %}{% endblock %}"><a href="ShowGrade">查看成绩</a></li>
+                {% endif %}
+            {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
            {% if user.is_authenticated %}

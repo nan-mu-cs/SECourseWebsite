@@ -1,0 +1,60 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+    <p>{{ user.username }},您好,请注意作业提交的截止时间</p>
+    </br></br>
+    <div class="message_list">
+     <ul>
+         {% for item in message %}
+             <li>
+                <ul>
+                    <li>
+                        作业题目:{{ item.4 }}
+                    </li>
+                    <li>
+                        作业描述:{{ item.2 }}
+                    </li>
+                     <li>
+                        发布人:{{ item.1 }}
+                    </li>
+                     <li>
+                        截止时间:{{ item.3 }}
+                    </li>
+                    <li>
+                        提交作业:
+                        <form action="HomeworkAndGrades" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <p>{{ form.non_field_errors }}</p>
+                            <p>{{ form.docfile.label_tag }}</p>
+                            <p>
+                            {{ form.docfile.errors }}
+                            {{ form.docfile }}
+                            </p>
+                            <p><input type="submit" value="上传" /></p>
+                            <input type="hidden" name="hwid" value="{{item.0}}" />
+                        </form>
+                    </li>
+                    <li>
+                        已经提交的作业:
+                        {% for homework in homeworks %}
+                            {% if homework.0 == item.0 %}
+                                <tr>
+                                <td>{{ homework.1.name }}</td>
+                                <td> <a href="{{ homework.1.url }}">下载</a></td>
+                                    <td> <td><a href="HomeworkAndGrades?deleteid={{ homework.2 }}">删除</a></td></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
+                </ul>
+
+             </li>
+             <br>
+             <br>
+         {% endfor %}
+     </ul>
+    </div>
+{% endblock %}

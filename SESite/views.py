@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Sum
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect, HttpResponse
@@ -12,8 +13,8 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
-from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm
-from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person
+from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm, HomeworkForm
+from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person, StudentHomework, Homework
 
 TEACHER = 1
 STUDENT = 2
@@ -308,3 +309,111 @@ def Change_Account(request):
     except Person.DoesNotExist:
         account_data = None
     return HttpResponse(account_data.user.email)
+
+def AssignHomework(request):
+    #post 提交新内容
+    if request.method == 'POST':
+        #这样可以直接就插到数据库中了
+        try:
+            tube = StudentHomework.objects.get(id=request.POST['HomeworkID'])
+            tube.score = request.POST['score']
+            tube.save();
+        except MultiValueDictKeyError:
+            Homework.objects.create(assigner=request.user,description = request.POST['post_message'],due_time = request.POST['due_time'],title=request.POST['title'])
+        #如果是GET，可能是刷新网页，也可能是点了删除链接
+    elif request.method == 'GET':
+        try:
+            #删除信息
+            messageid = request.GET['deleteid']
+            try:
+                #数据库中查询
+                query = Homework.objects.get(id=messageid).delete()
+            except NoticeMessage.DoesNotExist:
+                #查询结果为空会抛出异常，需要在异常中处理
+                query = None
+        except MultiValueDictKeyError:
+            #单纯刷新网页，所以不会GET到deleteid
+            messageid = None
+    #数据库中现在存在的所有message都get出来
+    result = []
+    message_list = Homework.objects.all()
+    message_list.order_by("post_time")
+    for item in message_list:
+        res = [item.id,item.assigner,item.description,item.due_time.strftime("%Y-%m-%d %H:%M:%S"),item.title]
+        result.append(res)
+    result.reverse()
+    homeworks = []
+    homeworks_list = StudentHomework.objects.all()
+    homeworks_list.order_by("homeworkid")
+    for item in homeworks_list:
+        res = [item.homeworkid_id,item.student_ID, item.homeworkfile,item.score,item.id]
+        homeworks.append(res)
+
+    return render(request,"AssignHomework.html",{'message':result,'homeworks':homeworks})
+
+def Grade(request):
+    if request.method == 'POST':
+        print(request.POST['HomeworkID'])
+        tube = StudentHomework.objects.get(id=request.POST['HomeworkID'])
+        tube.score = request.POST['score']
+        tube.save();
+    student_gourp_list=StudentHomework.objects.all().values('student_ID__username').annotate(s_amount = Sum('score'))
+    score_list = StudentHomework.objects.all()
+    score_list.order_by("homeworkid_id")
+    Sumscore=[]
+    ScoreList=[]
+    for item in student_gourp_list:
+        res = [str(item["s_amount"]),str(item["student_ID__username"])]
+        Sumscore.append(res)
+    for item in score_list:
+        res = [item.score,str(item.student_ID),item.homeworkid_id,item.id]
+        ScoreList.append(res)
+    return render(request, 'Grade.html',{'StudentScore':Sumscore,'HomeworkScore':ScoreList})
+
+def ShowGrade(request):
+    result = []
+    message_list = StudentHomework.objects.filter(student_ID=request.user)
+    message_list.order_by("homeworkid")
+    for item in message_list:
+        res = [item.homeworkid_id,item.score]
+        result.append(res)
+    return render(request, 'ShowGrade.html',{'message':result})
+
+def HomeworkAndGrades(request):
+    if request.method == 'POST':
+        form = HomeworkForm(request.POST,request.FILES)
+        if form.is_valid():
+            homework=Homework.objects.get(id=request.POST['hwid'])
+            newdoc = StudentHomework(student_ID=request.user,homeworkid=homework,homeworkfile=request.FILES['docfile'],score=0)
+            newdoc.save()
+            return HttpResponseRedirect('HomeworkAndGrades')
+    elif request.method == 'GET':
+        try:
+            #删除信息
+            messageid = request.GET['deleteid']
+            try:
+                #数据库中查询
+                query = StudentHomework.objects.get(id=messageid).delete()
+            except NoticeMessage.DoesNotExist:
+                #查询结果为空会抛出异常，需要在异常中处理
+                query = None
+        except MultiValueDictKeyError:
+            #单纯刷新网页，所以不会GET到deleteid
+            messageid = None
+    #数据库中现在存在的所有message都get出来
+    result = []
+    message_list = Homework.objects.all()
+    message_list.order_by("post_time")
+    for item in message_list:
+        res = [item.id,item.assigner,item.description,item.due_time.strftime("%Y-%m-%d %H:%M:%S"),item.title]
+        result.append(res)
+    result.reverse()
+    homeworks = []
+    form = HomeworkForm()
+    documents = StudentHomework.objects.filter(student_ID=request.user)
+    for item in documents:
+        res = [item.homeworkid_id,item.homeworkfile,item.id]
+        homeworks.append(res)
+    print (homeworks)
+    return render(request,"HomeworkAndGrades.html",{'message':result, 'form':form, 'homeworks':homeworks})
+

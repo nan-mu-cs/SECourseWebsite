@@ -1,0 +1,119 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+     <p class="text-info">{{ user.username }},发布作业与批改作业</p>
+     <form method="post" action="AssignHomework">
+        {% csrf_token %}
+        <h4>布置新作业:</h4>
+        作业标题:&nbsp&nbsp&nbsp<input type="text" style="width:400px;height:20px;" name="title"/>
+         <p>作业描述</p>:
+        <textarea style="width:400px;height:200px;" name="post_message"></textarea>
+         <p>设定截止时间</p>:
+         <input type="datetime-local" name="due_time"/>
+         &nbsp&nbsp&nbsp
+        <input type="submit" value="提交作业描述"/>
+     </form>
+    </br></br>
+    <div class="message_list">
+     <ul>
+         {% for item in message %}
+             <li>
+                <ul>
+                    <li>
+                        <strong>作业题目</strong>:{{ item.4 }}
+                    </li>
+                    <li>
+                        <strong>作业描述</strong>:{{ item.2 }}
+                    </li>
+                     <li>
+                        <strong>发布人</strong>:{{ item.1 }}
+                    </li>
+                     <li>
+                        <strong>截止时间</strong>:{{ item.3 }}
+                    </li>
+                    <li><a href="AssignHomework?deleteid={{ item.0 }}">删除本次作业</a></li>
+                <li>当前作业列表:<br>
+                {% if homeworks %}
+                <div style="width: 400px">
+                <table class="table table-condensed table-bordered table-striped">
+                    <thead>
+                        <th>学生姓名</th>
+                        <th>下载</th>
+                        <th>当前得分</th>
+                        <th>评分</th>
+                    </thead>
+                    {% for homeworklist in homeworks %}
+                        {% if homeworklist.0 == item.0 %}
+                            <tbody>
+                            <td width="25%">{{ homeworklist.1 }}</td>
+                            <td width="20%"><a href={{ homeworklist.2.url }}>下载</a></td>
+                            <td width="20%">
+                                {% if homeworklist.3 != 0 %}
+                                    {{ homeworklist.3 }}
+                                {% else %}
+                                    尚未评分
+                                {% endif %}
+                                    </td>
+                            <td width="35%">
+                                <form method="post" action="AssignHomework" onsubmit="return validate_form(this)">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="HomeworkID" value="{{ homeworklist.4 }}"/>
+                                    <input type="text" style="width: 50px" name="score"/>
+                                    <input type="submit" value="提交"/>
+                                </form>
+                            </td>
+                            </tbody>
+                        {% endif %}
+                    {%  endfor %}
+                </table>
+                </div>
+                {% endif %}
+                </li>
+                </ul>
+             </li>
+             <br>
+             <br>
+         {% endfor %}
+     </ul>
+    </div>
+
+
+<script type="application/javascript">
+    function validate_required(field,alerttxt)
+{
+with (field)
+  {
+  if (value==null||value=="")
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+
+function score_validate(field,alerttxt)
+{
+with (field)
+  {
+  if (value>100)
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+function validate_form(thisform)
+{
+with (thisform)
+  {
+  if ((validate_required(score,"Score must be filled out!") == false) || (score_validate(score,"Score can't exceed 100") == false))
+    {score.focus();return false}
+  }
+}
+
+function linkok(url){
+    question = confirm("你确定要删除这个作业吗?");
+    if(question)
+        windows.location.href = url;
+}
+</script>
+{% endblock %}
