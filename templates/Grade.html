@@ -3,9 +3,15 @@
 {% block Script_Block %}
 <!--<script src="/static/js/NoticeBoard.js"></script>-->
 {% endblock %}
+{% block NavGrade%}active{% endblock %}
 {% block BodyBlock%}
-    <p>{{ user.username }},在这里你可以查看所有学生的每次作业成绩</p>
-    <div style="width:500px">
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-offset-1 col-lg-10">
+            <h1>{{ user.username }},在这里你可以查看所有学生的每次作业成绩</h1>
+        </div>
+        <div class="col-lg-offset-3 col-lg-6">
+            <div style="width:500px">
     {% for item in StudentScore %}
         <table class="table table-condensed table-bordered table-striped" width="700px">
         <tr>
@@ -49,6 +55,9 @@
         {% endfor %}
         </table>
     {% endfor %}
+    </div>
+        </div>
+    </div>
     </div>
 <script type="application/javascript">
     function validate_required(field,alerttxt)

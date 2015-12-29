@@ -14,7 +14,8 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
 from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm, HomeworkForm
-from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person, StudentHomework, Homework
+from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person, StudentHomework, Homework, \
+    Class
 
 TEACHER = 1
 STUDENT = 2
@@ -416,4 +417,24 @@ def HomeworkAndGrades(request):
         homeworks.append(res)
     print (homeworks)
     return render(request,"HomeworkAndGrades.html",{'message':result, 'form':form, 'homeworks':homeworks})
+
+@login_required
+def ChooseClass(request):
+    if request.method == "POST":
+        class_id = Class.objects.get(id=request.POST["class_id"])
+        Person.objects.filter(user=request.user).update(joined_class=class_id)
+        return HttpResponseRedirect('/')
+    elif request.method == "GET":
+        class_joined = Person.objects.filter(user=request.user)[0].joined_class
+        if request.user.has_perm("SESite.can_teach"):
+            joined_class = True
+            class_list = Class.objects.all()
+        elif class_joined.count() != 0:
+            joined_class = True
+            class_list = class_joined.all()
+        else:
+            joined_class = False
+            class_list = Class.objects.all()
+        return render(request,"ChooseClass.html",{'joined_class':joined_class,'class_list':class_list})
+
 

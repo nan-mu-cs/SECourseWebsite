@@ -40,7 +40,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'SESite',
-
     'pybb',
     'bootstrapform',
 )
@@ -123,9 +122,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #PYBB_TEMPLATE = 'MainTemplate.html'
 PYBB_SMILES_PREFIX = '/static/emoticons/'
+PYBB_USE_DJANGO_MAILER = False
 #PYBB_MARKUP = 'bbcode'
 #PYBB_NICE_URL = True
 #PYBB_DEFAULT_TITLE = '课程论坛'

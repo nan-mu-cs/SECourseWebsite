@@ -3,28 +3,39 @@
 {% block Script_Block %}
 <!--<script src="/static/js/NoticeBoard.js"></script>-->
 {% endblock %}
+{% block NavShowGrade %}active{% endblock %}
 {% block BodyBlock%}
-    <p>{{ user.username }},在这里你可以查看每次作业成绩</p>
-    {% if message %}
-        <table border="1" cellpadding="50">
-        <thead>
-            <th>作业ID</th>
-            <th>作业分数</th>
-        </thead>
-        <tbody>
-            {% for score in message %}
-                <tr>
-                    <td>{{ score.0 }}</td>
-                    {% if score.1 == 0 %}
-                    <td>未批改</td>
-                    {% else %}
-                    <td>{{ score.1 }}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-    {% else %}
-        <h4>当前没有可以显示的成绩</h4>
-    {% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-offset-1 col-lg-10">
+            <h1>{{ user.username }},在这里你可以查看每次作业成绩</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            {% if message %}
+                <table class="table">
+                    <thead>
+                        <th>作业ID</th>
+                        <th>作业分数</th>
+                    </thead>
+                    <tbody>
+                    {% for score in message %}
+                        <tr>
+                        <td>{{ score.0 }}</td>
+                        {% if score.1 == 0 %}
+                        <td>未批改</td>
+                        {% else %}
+                        <td>{{ score.1 }}</td>
+                        {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <h3>当前没有可以显示的成绩</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

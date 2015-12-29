@@ -11,19 +11,19 @@
     </div>
     <div class="row">
         <div class="col-lg-offset-3 col-lg-6">
-            <table>
+            <table class="table">
                <tbody>
-                 <tr><td>用户</td><td>{{ account_data.user.username }}</td></tr>
+                 <tr><td>用户</td><td colspan="2">{{ account_data.user.username }}</td></tr>
                 {% if perms.SESite.can_teach %}
-                    <tr><td>教工号</td><td>{{ account_data.idnum }}</td></tr>
-                    <tr><td>身份</td><td>教师/助教</td></tr>
+                    <tr><td>教工号</td><td colspan="2">{{ account_data.idnum }}</td></tr>
+                    <tr><td>身份</td><td colspan="2">教师/助教</td></tr>
                 {% else %}
-                    <tr><td>学号</td><td>{{ account_data.idnum }}</td></tr>
-                    <tr><td>身份</td><td>学生</td></tr>
+                    <tr><td>学号</td><td colspan="2">{{ account_data.idnum }}</td></tr>
+                    <tr><td>身份</td><td colspan="2">学生</td></tr>
                 {% endif %}
                 <tr><td>电子邮箱</td><td class="emailtd">{{ account_data.user.email }}</td><td><button type="button" class="btn btn-default emailbtn">修改</button></td></tr>
-                <tr><td>密码</td><td class="pswtd"><button type="button" class="btn btn-default pswbtn">修改</button></td></tr>
-                <tr><td><button type="button" class="btn btn-success savebtn">保存</button></td></tr>
+                <tr><td>密码</td><td class="pswtd" colspan="2"><button type="button" class="btn btn-default pswbtn">修改</button></td></tr>
+                <tr><td colspan="3" align="center"><button type="button" class="btn btn-success savebtn" >保存</button></td></tr>
                </tbody>
             </table>
         </div>

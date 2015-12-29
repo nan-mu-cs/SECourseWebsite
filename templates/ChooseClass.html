@@ -1,0 +1,25 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+{% endblock %}
+{% block BodyBlock%}
+    {% if joined_class %}
+        {% if class_list %}
+            {% for class in class_list %}
+                <p><a href="/">{{ class.class_name }},{{ class.teacher }}
+                {{ class.class_time }},{{ class.classroom }}</a></p>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <form method="POST" action="/ChooseClass">
+        {% csrf_token %}
+        {% if class_list %}
+            {% for class in class_list %}
+                <p><input type="radio" name="class_id" value="{{ class.id }}"/>{{ class.class_name }},{{ class.teacher }}
+                {{ class.class_time }},{{ class.classroom }}</p>
+            {% endfor %}
+            <input type="submit" value="加入课程">
+        {% endif %}
+        </form>
+    {% endif %}
+{% endblock %}

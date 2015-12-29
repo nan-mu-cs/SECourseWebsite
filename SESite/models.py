@@ -3,11 +3,21 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
+class Class(models.Model):
+    teacher = models.ForeignKey(User)
+    class_time = models.CharField(max_length=128)
+    classroom = models.CharField(max_length=128)
+    class_name = models.CharField(max_length=128)
+    class Meta:
+        db_table = 'Class'
+    def __unicode__(self):
+        return self.class_name
 
 class Person(models.Model):
     user = models.OneToOneField(User)
     idnum = models.CharField(max_length=20,primary_key=True)
     type = models.IntegerField()
+    joined_class = models.ManyToManyField(Class)
     class Meta:
          db_table = 'Person'
     def __unicode__(self):
@@ -79,3 +89,6 @@ class StudentHomework(models.Model):
         db_table = 'StudentHomework'
     def __unicode__(self):
         return self.homeworkfile.name
+
+
+

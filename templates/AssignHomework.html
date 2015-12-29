@@ -3,40 +3,47 @@
 {% block Script_Block %}
 <!--<script src="/static/js/NoticeBoard.js"></script>-->
 {% endblock %}
+{% block NavAssignHomework %}active{% endblock %}
 {% block BodyBlock%}
-     <p class="text-info">{{ user.username }},发布作业与批改作业</p>
-     <form method="post" action="AssignHomework">
-        {% csrf_token %}
-        <h4>布置新作业:</h4>
-        作业标题:&nbsp&nbsp&nbsp<input type="text" style="width:400px;height:20px;" name="title"/>
-         <p>作业描述</p>:
-        <textarea style="width:400px;height:200px;" name="post_message"></textarea>
-         <p>设定截止时间</p>:
-         <input type="datetime-local" name="due_time"/>
-         &nbsp&nbsp&nbsp
-        <input type="submit" value="提交作业描述"/>
-     </form>
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+          <h1 >{{ user.username }},发布作业与批改作业</h1>
+        </div>
+        <div class="col-lg-6 col-lg-offset-3">
+             <div class="form-group">
+                 <form method="post" action="AssignHomework">
+                {% csrf_token %}
+                 <h2>布置新作业</h2>
+                 <h3>作业标题</h3>
+                 <input type="text" class="form-control" name="title"/>
+                 <h3>作业描述</h3>
+                 <textarea class="form-control" name="post_message"></textarea>
+                 <h3>设定截止时间</h3>
+                 <input type="datetime-local" class="form-control"  name="due_time"/>
+                 <br><br>
+                 <div align="center"><input type="submit"  class="btn btn-success btn-primary btn-lg center"  value="提交作业描述"/></div>
+                 </form>
+             </div>
+        </div>
+    </div>
+    </div>
+
     </br></br>
-    <div class="message_list">
-     <ul>
-         {% for item in message %}
-             <li>
-                <ul>
-                    <li>
-                        <strong>作业题目</strong>:{{ item.4 }}
-                    </li>
-                    <li>
-                        <strong>作业描述</strong>:{{ item.2 }}
-                    </li>
-                     <li>
-                        <strong>发布人</strong>:{{ item.1 }}
-                    </li>
-                     <li>
-                        <strong>截止时间</strong>:{{ item.3 }}
-                    </li>
-                    <li><a href="AssignHomework?deleteid={{ item.0 }}">删除本次作业</a></li>
-                <li>当前作业列表:<br>
-                {% if homeworks %}
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-6">
+            <h1>已发布作业</h1>
+            {% for item in message %}
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>作业题目</strong>:{{ item.4 }}</div>
+                     <div class="panel-body">
+                         <ul>
+                             <li><strong>作业描述</strong>:{{ item.2 }}</li>
+                             <li><strong>发布人</strong>:{{ item.1 }}</li>
+                             <li><strong>截止时间</strong>:{{ item.3 }}</li>
+                             <li><a href="AssignHomework?deleteid={{ item.0 }}">删除本次作业</a></li>
+                         <li>当前作业列表
+                         {% if homeworks %}
                 <div style="width: 400px">
                 <table class="table table-condensed table-bordered table-striped">
                     <thead>
@@ -70,13 +77,16 @@
                     {%  endfor %}
                 </table>
                 </div>
-                {% endif %}
-                </li>
-                </ul>
-             </li>
-             <br>
-             <br>
+                {% endif %}</li>
+                         </ul>
+                     </div>
+                </div>
          {% endfor %}
+        </div>
+    </div>
+    <div class="message_list">
+     <ul>
+
      </ul>
     </div>
 

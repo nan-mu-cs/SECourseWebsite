@@ -10,15 +10,15 @@
 <form method="post" action="NoticeBoard">
     {% csrf_token %}
     <div class="row">
-        <div class="col-lg-6 col-lg-offset-3">
+        <div class="col-lg-8 col-lg-offset-2">
           <h1>发布公告</h1>
             <div class="input-group-addon">
-             <textarea class="form-control" rows="3" name="post_message"></textarea>
+             <textarea class="form-control markItUpEditor" id="markItUp" rows="15" name="post_message"></textarea>
           </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6 col-lg-offset-3">
+        <div class="col-lg-8 col-lg-offset-2">
             <span class="input-group-btn input-group-addon">
                <input class="btn btn-default" type="submit" value="提交公告"/>
              </span>
@@ -27,11 +27,11 @@
      </form>
  {% endif %}
  <div class="row">
-    <div class="col-lg-offset-3 col-lg-6">
+    <div class="col-lg-offset-2 col-lg-8">
     <div class="message_list list-group ">
          {% for item in message %}
              <div class="list-group-item">
-                        <h4 class="h4 list-group-item-heading">{{ item.2 }}</h4>
+                        <p class="h4 list-group-item-heading">{{ item.2|safe }}</p>
                         <p class="list-group-item-text pull-right">{{ item.1 }} {{ item.3 }} </p>
                     {% if perms.SESite.can_teach %}
                         <p class=""><a href="NoticeBoard?deleteid={{ item.0 }}">删除</a></p>
@@ -46,15 +46,45 @@
 </div>
  </div>
      </div>
-     <script >
-$(document).ready(function(){
-    /*
-    for( i = 0;i<message.length;i++){
-        $('.message_list > ul').append('<ul id="message'+i+'"></ul>')
-        $('#message'+i).append('<li><ul></ul></li>').append('<li>'+message[i][1]+'</li>'
-                                                            +'<li>'+message[i][0]+'</li>'
-                                                            +'<li>'+message[i][2]+'</li>');
-    }*/
+     <script type="text/javascript">
+$(function() {
+    //var mySettings = window.pybb.get_markitup_settings();
+	// Add markItUp! to your textarea in one line
+	// $('textarea').markItUp( { Settings }, { OptionalExtraSettings } );
+//	$('#markItUp').markItUp(mySettings);
+
+
+    jQuery("#markItUp").markItUp(mySettings).css('height', function() {
+  /* Since line-height is set in the markItUp-css, fetch that value and
+  split it into value and unit.  */
+  var h = jQuery(this).css('line-height').match(/(\d+)(.*)/)
+  /* Multiply line-height-value with nr-of-rows and add the unit.  */
+  return (h[1]*jQuery(this).attr('rows'))+h[2]
+});
+	// You can add content from anywhere in your page
+	// $.markItUp( { Settings } );
+	$('.add').click(function() {
+ 		$('#markItUp').markItUp('insert',
+			{ 	openWith:'<opening tag>',
+				closeWith:'<\/closing tag>',
+				placeHolder:"New content"
+			}
+		);
+ 		return false;
+	});
+
+	// And you can add/remove markItUp! whenever you want
+	// $(textarea).markItUpRemove();
+	$('.toggle').click(function() {
+		if ($("#markItUp.markItUpEditor").length === 1) {
+ 			$("#markItUp").markItUp('remove');
+			$("span", this).text("get markItUp! back");
+		} else {
+			$('#markItUp').markItUp(mySettings);
+			$("span", this).text("remove markItUp!");
+		}
+ 		return false;
+	});
 });
 </script>
 {% endblock %}
