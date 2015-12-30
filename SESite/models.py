@@ -22,7 +22,7 @@ class Person(models.Model):
         return self.idnum
 class Classmember(models.Model):
     class_info = models.ForeignKey(Class)
-    member = models.ForeignKey(Person)
+    member = models.ForeignKey(User)
 class NoticeMessage(models.Model):
     writer = models.ForeignKey(User)
     message = models.CharField(max_length=2000)

@@ -15,7 +15,7 @@ from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm, HomeworkForm
 from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person, StudentHomework, Homework, \
-    Class
+    Class, Classmember
 
 TEACHER = 1
 STUDENT = 2
@@ -110,7 +110,7 @@ def Login(request):
                 # If the account is valid and active, we can log the user in.
                 # We'll send the user back to the homepage.
                 login(request, user)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/ChooseClass')
             else:
                 # An inactive account was used - no logging in!
                 return HttpResponse("Your  account is disabled.")
@@ -425,17 +425,21 @@ def HomeworkAndGrades(request):
 def ChooseClass(request):
     if request.method == "POST":
         class_id = Class.objects.get(id=request.POST["class_id"])
+        Classmember.objects.create(member=request.user,class_info=class_id)
         #Person.objects.filter(user=request.user).update(joined_class=class_id)
         #Person.objects.create(user=request.user,joined_class=class_id)
         return HttpResponseRedirect('/')
     elif request.method == "GET":
-        class_joined = Person.objects.filter(user=request.user)[0].joined_class
+        numofclass_joined = Classmember.objects.filter(member=request.user).count()
         if request.user.has_perm("SESite.can_teach"):
             joined_class = True
             class_list = Class.objects.filter(teacher=request.user)
-        elif class_joined.count() != 0:
+        elif numofclass_joined != 0:
             joined_class = True
-            class_list = class_joined.all()
+            class_set = Classmember.objects.filter(member=request.user)
+            class_list = []
+            for class_info in class_set:
+                class_list.append(class_info.class_info)
         else:
             joined_class = False
             class_list = Class.objects.all()
