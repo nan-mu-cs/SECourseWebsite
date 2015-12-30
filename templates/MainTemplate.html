@@ -31,9 +31,9 @@
             <li class="{%block NavCourseIntro %}{% endblock %}"><a href="/ScoreConsti">课程介绍</a></li>
             <li class="{%block NavTeacherIntro %}{% endblock %}"><a href="/TAIntro">教师/助教介绍</a></li>
             {% if user.is_authenticated %}
-                <li class="{%block NavAssignHomework %}{% endblock %}"><a href="/AssignHomework">发布作业&批改成绩</a></li>
-                <li class="{%block NavGrade %}{% endblock %}"><a href="/Grade">管理成绩</a></li>
                 {% if perms.SESite.can_teach %}
+                    <li class="{%block NavAssignHomework %}{% endblock %}"><a href="/AssignHomework">发布作业&批改成绩</a></li>
+                    <li class="{%block NavGrade %}{% endblock %}"><a href="/Grade">管理成绩</a></li>
                     {% if perms.SESite.can_judge_ta %}
                     {% else %}
                     {% endif %}
