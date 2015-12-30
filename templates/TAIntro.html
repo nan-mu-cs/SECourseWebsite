@@ -13,9 +13,9 @@
             {% csrf_token %}
                 <div class="form-group">
                     <h2>任课教师信息录入</h2>
-                    <textarea class="form-control"  name="teacher_msg"></textarea>
+                    <textarea class="form-control markItUpEditor"  rows="10" name="teacher_msg"></textarea>
                     <h2>助教信息录入</h2>
-                    <textarea class="form-control" name="ta_msg"></textarea>
+                    <textarea class="form-control markItUpEditor" rows="10" name="ta_msg"></textarea>
                     <div align="center"><input type="submit"  class="btn btn-success btn-primary btn-lg center" /></div>
                 </div>
             </form>
@@ -27,10 +27,10 @@
             <div class="jumbotron">
                 {% for item in teacher_intro %}
                 <h2>任课教师</h2>
-                <p>{{ item.2 }}</p>
+                <p>{{ item.2|safe }}</p>
                 <label>By TA.{{ item.1 }}</label>
                 <h2>助教</h2>
-                <p>{{ item.3 }}</p>
+                <p>{{ item.3|safe }}</p>
                 <lable>By TA.{{ item.1 }}</lable>
                 {% if perms.SESite.can_teach %}<h3><a href="teacher_msg?deleteid={{ item.0 }}">删除</a></h3>{% endif %}
             {% endfor %}
@@ -38,6 +38,17 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+$(function() {
+    jQuery(".markItUpEditor").markItUp(mySettings).css('height', function() {
+  /* Since line-height is set in the markItUp-css, fetch that value and
+  split it into value and unit.  */
+  var h = jQuery(this).css('line-height').match(/(\d+)(.*)/)
+  /* Multiply line-height-value with nr-of-rows and add the unit.  */
+  return (h[1]*jQuery(this).attr('rows'))+h[2]
+});
+});
+</script>
 {% endblock %}
 {#    {% if perms.SESite.can_teach %}#}
 {#    <div id="container-1">#}

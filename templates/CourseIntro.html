@@ -13,13 +13,13 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <h2>预修要求</h2>
-                    <textarea class="form-control" name="PreCourseRequire"></textarea>
+                    <textarea class="form-control markItUpEditor" rows="15" name="PreCourseRequire"></textarea>
 
                     <h2>课程教材</h2>
-                    <textarea class="form-control" name="Material"></textarea>
+                    <textarea class="form-control markItUpEditor" rows="15" name="Material"></textarea>
 
                     <h2>分数构成</h2>
-                    <textarea class="form-control" name="Score" ></textarea>
+                    <textarea class="form-control markItUpEditor" rows="15" name="Score" ></textarea>
                     <div align="center"><input type="submit"  class="btn btn-success btn-primary btn-lg center" /></div>
                 </div>
 
@@ -32,13 +32,13 @@
                 <div class="jumbotron">
                     {% for item in pre_intro %}
                 <h2>预修要求</h2>
-                <p>{{ item.2 }}</p>
+                <p>{{ item.2|safe }}</p>
                 <label>By TA.{{ item.1 }}</label>
                 <h2>课程教材</h2>
-                <p>{{ item.3 }}</p>
+                <p>{{ item.3|safe }}</p>
                 <label>By TA.{{ item.1 }}</label>
                 <h2>分数构成</h2>
-                <p>{{ item.4 }}</p>
+                <p>{{ item.4|safe }}</p>
                 <label>By TA.{{ item.1 }}</label>
                 {% if perms.SESite.can_teach %}<h3><a href="ScoreConsti?deleteid={{ item.0 }}">删除</a></h3>{% endif %}
             {% endfor %}
@@ -46,6 +46,23 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+$(function() {
+    //var mySettings = window.pybb.get_markitup_settings();
+	// Add markItUp! to your textarea in one line
+	// $('textarea').markItUp( { Settings }, { OptionalExtraSettings } );
+//	$('#markItUp').markItUp(mySettings);
+
+
+    jQuery(".markItUpEditor").markItUp(mySettings).css('height', function() {
+  /* Since line-height is set in the markItUp-css, fetch that value and
+  split it into value and unit.  */
+  var h = jQuery(this).css('line-height').match(/(\d+)(.*)/)
+  /* Multiply line-height-value with nr-of-rows and add the unit.  */
+  return (h[1]*jQuery(this).attr('rows'))+h[2]
+});
+});
+</script>
     {% endblock %}
     <!-- show the result of the introduce of the course -->
 {#    <div id="container-2">#}

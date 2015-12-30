@@ -12,17 +12,17 @@ class Class(models.Model):
         db_table = 'Class'
     def __unicode__(self):
         return self.class_name
-
 class Person(models.Model):
     user = models.OneToOneField(User)
     idnum = models.CharField(max_length=20,primary_key=True)
     type = models.IntegerField()
-    joined_class = models.ManyToManyField(Class)
     class Meta:
          db_table = 'Person'
     def __unicode__(self):
         return self.idnum
-
+class Classmember(models.Model):
+    class_info = models.ForeignKey(Class)
+    member = models.ForeignKey(Person)
 class NoticeMessage(models.Model):
     writer = models.ForeignKey(User)
     message = models.CharField(max_length=2000)

@@ -5,10 +5,10 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6 col-lg-offset-3">
-            <h1>Register</h1>
+            <h1>注册</h1>
         {% if registered %}
-        <strong>thank you for registering!</strong>
-        <a href="">Return to the homepage.</a><br />
+        <strong>感谢您的注册!</strong>
+        <a href="">返回首页.</a><br />
         {% else %}
         <form  method="POST" class="form-group" action="Register" enctype="multipart/form-data">
             {% csrf_token %}

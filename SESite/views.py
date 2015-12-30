@@ -19,6 +19,7 @@ from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro,
 
 TEACHER = 1
 STUDENT = 2
+TA = 3
 '''
 content_type = ContentType.objects.get(app_label="SESite",model="person")
 teacher_group = Group.objects.get(name="Teacher")
@@ -35,7 +36,6 @@ can_study = Permission.objects.create(name="Can study",codename="can_study",cont
 #student_group.permissions.add(can_study)
 student_group.premissions = [can_study,]
 '''
-
 def index(request):
     '''直接返回首页，不需要任何处理'''
     return render(request,"index.html",{});
@@ -64,9 +64,12 @@ def Register(request):
             if profile.type == TEACHER:
                 teacher_group = Group.objects.get(name="Teacher")
                 teacher_group.user_set.add(user)
-            else:
+            elif profile.type == STUDENT:
                 student_group = Group.objects.get(name="Student")
                 student_group.user_set.add(user)
+            else:
+                ta_group = Group.objects.get(name="TA")
+                ta_group.user_set.add(user)
             user = authenticate(username=request.POST['username'],password=request.POST['password'])
             login(request,user)
             return HttpResponseRedirect('/')
@@ -422,13 +425,14 @@ def HomeworkAndGrades(request):
 def ChooseClass(request):
     if request.method == "POST":
         class_id = Class.objects.get(id=request.POST["class_id"])
-        Person.objects.filter(user=request.user).update(joined_class=class_id)
+        #Person.objects.filter(user=request.user).update(joined_class=class_id)
+        #Person.objects.create(user=request.user,joined_class=class_id)
         return HttpResponseRedirect('/')
     elif request.method == "GET":
         class_joined = Person.objects.filter(user=request.user)[0].joined_class
         if request.user.has_perm("SESite.can_teach"):
             joined_class = True
-            class_list = Class.objects.all()
+            class_list = Class.objects.filter(teacher=request.user)
         elif class_joined.count() != 0:
             joined_class = True
             class_list = class_joined.all()
