@@ -1,0 +1,22 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block Script_Block %}
+<!--<script src="/static/js/NoticeBoard.js"></script>-->
+{% endblock %}
+{% block BodyBlock%}
+   <div class="container">
+   <div class="row">
+       <ul class="nav nav-tabs">
+  <li role="presentation" class="{% block message_nav_inbox %}{% endblock %}"><a href="/messages/inbox">收件箱</a></li>
+  <li role="presentation" class="{% block message_nav_write %}{% endblock %}"><a href="/messages/write">新建消息</a></li>
+  <li role="presentation" class="{% block message_nav_archive %}{% endblock %}"><a href="/messages/archives">归档</a></li>
+  <li role="presentation" class="{% block message_nav_sent %}{% endblock %}"><a href="/messages/sent">发件箱</a></li>
+  <li role="presentation" class="{% block message_nav_trash %}{% endblock %}"><a href="/messages/trash">垃圾箱</a></li>
+</ul>
+   </div>
+   <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+             {% block content %}
+             {% endblock content %}
+            </div>
+{% endblock %}

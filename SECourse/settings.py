@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'SESite',
     'pybb',
     'bootstrapform',
+    'postman',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -53,7 +54,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-
+    'django.middleware.locale.LocaleMiddleware',
     'pybb.middleware.PybbMiddleware',
 )
 
@@ -71,7 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
+                'postman.context_processors.inbox',
                 'pybb.context_processors.processor',
             ],
         },
@@ -95,7 +96,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'zh_CN'
 #LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -130,3 +131,7 @@ PYBB_USE_DJANGO_MAILER = False
 #PYBB_NICE_URL = True
 #PYBB_DEFAULT_TITLE = '课程论坛'
 #PYBB_NICE_URL_PERMANENT_REDIRECT = False
+
+POSTMAN_DISABLE_USER_EMAILING = True
+POSTMAN_DISALLOW_ANONYMOUS = True
+POSTMAN_AUTO_MODERATE_AS = True

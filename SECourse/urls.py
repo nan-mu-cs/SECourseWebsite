@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+import postman
 from SECourse import settings
 from SESite import views
 from SESite.admin import admin_site
@@ -26,7 +27,7 @@ urlpatterns = [
     url(r'^$',views.index,name="index"),
     url(r'^Register$',views.Register,name="Register"),
     url(r'^Login',views.Login,name="Login"),
-    url(r'Logout',views.Logout,name="Logout"),
+    url(r'^Logout',views.Logout,name="Logout"),
     url(r'nopremission',views.NoPermission,name="NoPermission"),
     url(r'^NoticeBoard$',views.NoticeBoard,name="NoticeBoard"),
     url(r'CourseMaterials$',views.CourseMaterials,name="CourseMaterials"),
@@ -44,4 +45,5 @@ urlpatterns = [
     url(r'^ShowGrade$',views.ShowGrade,name="ShowGrade"),
     url(r'ChooseClass$',views.ChooseClass,name="ChooseClass"),
     url(r'^forum/', include('pybb.urls', namespace='pybb')),
+    url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
