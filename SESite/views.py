@@ -1,8 +1,10 @@
 #coding: utf-8
 from datetime import time
 import json
+import csv
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
@@ -445,4 +447,49 @@ def ChooseClass(request):
             class_list = Class.objects.all()
         return render(request,"ChooseClass.html",{'joined_class':joined_class,'class_list':class_list})
 
+def get_classmember(classid):
+    result = []
+    class_info = Class.objects.get(id=classid)
+    classmember = Classmember.objects.filter(class_info=class_info)
+    for member in classmember:
+        username=member.member.username
+        person = Person.objects.get(user=member.member)
+        item = {'username':username,'stuid':person.idnum,'id':member.member.id}
+        result.append(item)
+    return result
+
+def import_student(request):
+    if request.method == 'POST':
+        #csvfile = csv.DictReader(request.FILES['csvfile'].read())
+        #for row in csvfile:
+        #   print row
+        classid = request.POST['classid']
+        if classid > 0:
+            contains = request.FILES['csvfile'].read().splitlines()
+            class_info = Class.objects.get(id=classid)
+            for i in range(1,len(contains)):
+                stuid,name = contains[i].split(',')
+                user = User.objects.create(username=name,password=make_password('123456'))
+                Person.objects.create(user=user,idnum=stuid,type=STUDENT)
+                student_group = Group.objects.get(name="Student")
+                student_group.user_set.add(user)
+                Classmember.objects.create(class_info=class_info,member=user)
+            classid =  request.GET['classid']
+            classmember = get_classmember(classid)
+    if request.method == 'GET':
+        try:
+            classid =  request.GET['classid']
+            classmember = get_classmember(classid)
+        except MultiValueDictKeyError:
+            classmember = []
+            classid = -1
+    return render(request,'ImportStudent.html',{'classid':classid,'classmember':classmember})
+
+def delete_stu(request):
+    classid = request.GET['classid']
+    userid = request.GET['userid']
+    user = User.objects.get(id=userid)
+    Person.objects.filter(user=user).delete()
+    User.objects.filter(id=userid).delete()
+    return HttpResponseRedirect('/importstudent?classid='+classid)
 

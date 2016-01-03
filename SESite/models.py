@@ -77,7 +77,7 @@ class Homework(models.Model):
         return self.description
 
 def homework_upload_directory_path(instance,filename):
-        return u'homework/user_{0}_{1}_{2}'.format(instance.student_ID_id,filename,instance.homeworkid_id)
+        return u'homework/user_{0}_{1}_{2}'.encode('utf-8').format(instance.student_ID_id,instance.homeworkid_id,filename)
 
 class StudentHomework(models.Model):
     student_ID = models.ForeignKey(User)

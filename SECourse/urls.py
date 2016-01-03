@@ -46,4 +46,6 @@ urlpatterns = [
     url(r'ChooseClass$',views.ChooseClass,name="ChooseClass"),
     url(r'^forum/', include('pybb.urls', namespace='pybb')),
     url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
+    url(r'^importstudent',views.import_student,name='importstudent'),
+    url(r'^deletestu',views.delete_stu,name="deletestu"),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,51 @@
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block BodyBlock%}
+    <div class="row">
+    <div class="col-lg-offset-3 col-lg-6">
+         <h1>管理学生</h1>
+    </div>
+    </div>
+{#    <div class="row">#}
+{#        <div class="col-lg-6 col-lg-offset-3">#}
+{#            <ul class="nav nav-tabs">#}
+{#                <li role="presentation" class="active" >添加单个学生</li>#}
+{#                <li role="presentation"> 导入CSV数据文件</li>#}
+{#            </ul>#}
+{#        </div>#}
+{#    </div>#}
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-6">
+           <form method="POST" action="importstudent" enctype="multipart/form-data">
+               <h3>导入学生名单</h3>
+               <p>可以导入格式为'学号,姓名'的CSV数据文件</p>
+        {% csrf_token %}
+        <div class="-align-center"><input type="file" name="csvfile" value="csvfile"></div>
+        <input type="hidden" name="classid" value="{{ classid }}"/>
+        <div align="center"><input type="submit"  class="btn btn-success btn-primary btn-lg center"  value="提交文件"/></div>
+    </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            <table class="table">
+                <thead>
+                <td>姓名</td>
+                <td>学号</td>
+                <td>操作</td>
+                </thead>
+                <tbody>
+                    {% if classmember %}
+                        {% for item in classmember %}
+                            <tr>
+                                <td>{{ item.username }}</td>
+                                <td>{{ item.stuid }}</td>
+                                <td><a href="/deletestu?classid={{ classid }}&userid={{ item.id }}">删除</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

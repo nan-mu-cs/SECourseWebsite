@@ -10,11 +10,17 @@
                 <div class="message_list list-group ">
                 {% if class_list %}
                 {% for class in class_list %}
-                <div class="list-group-item"><h3><a href="/">{{ class.class_name }},{{ class.teacher }}
-                {{ class.class_time }},{{ class.classroom }}</a></h3>
+                <div class="list-group-item"><input type="radio" name="class" value="{{ class.id }}">{{ class.class_name }},{{ class.teacher }}
+                {{ class.class_time }},{{ class.classroom }}
+                    </input>
                 </div>
                 {% endfor %}
                 {% endif %}
+                <div align="center">
+                    <input type="button" id="enterbtn" class="btn btn-success btn-primary btn-lg center"  value="进入班级"/>
+                    <input type="button"  id="managebtn" class="btn btn-success btn-primary btn-lg center"  value="管理班级"/>
+                </div>
+                    <div id="warning"></div>
                 </div>
             </div>
         </div>
@@ -37,4 +43,37 @@
             </div>
         </div>
     {% endif %}
+<script type="application/javascript">
+$(document).ready(
+        function(){
+            $('#managebtn').click(
+                    function(){
+                        classid = $("input[name='class']:checked").val();
+                        if(classid == undefined){
+                            $('#warning').html('<p>请选择一个班级</p>');
+                            return false;
+                        }
+                        //$.get('\importstudent?classid='+classid)
+                        location.href = '/importstudent?classid='+classid;
+                    }
+            )
+            $("input[name='class']").change(
+                    function(){
+                        $('#warning').html('');
+                    }
+            )
+            $('#enterbtn').click(
+                    function(){
+                        classid = $("input[name='class']:checked").val();
+                        if(classid == undefined){
+                            $('#warning').html('<p>请选择一个班级</p>');
+                            return false;
+                        }
+                        //$.get('\importstudent?classid='+classid)
+                        location.href = '/'
+                    }
+            );
+        }
+)
+</script>
 {% endblock %}
