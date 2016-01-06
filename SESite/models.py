@@ -4,7 +4,7 @@ from django.db import models
 
 # Create your models here.
 class Class(models.Model):
-    teacher = models.ForeignKey(User)
+    #teacher = models.ForeignKey(User)
     class_time = models.CharField(max_length=128)
     classroom = models.CharField(max_length=128)
     class_name = models.CharField(max_length=128)
@@ -27,6 +27,7 @@ class NoticeMessage(models.Model):
     writer = models.ForeignKey(User)
     message = models.CharField(max_length=2000)
     post_time = models.DateTimeField(auto_now_add=True)
+    classid = models.IntegerField(default=1)
     class Meta:
         db_table = 'NoticeMessage'
     def __unicode__(self):
@@ -39,6 +40,7 @@ class mCourseMaterials(models.Model):
     title = models.CharField(max_length=256)
     upload_time = models.DateTimeField(auto_now_add=True)
     docfile = models.FileField(upload_to=coursematerials_upload_directory_path)
+    classid = models.IntegerField(default=1)
     class Meta:
         db_table = 'CourseMaterials'
     def __unicode__(self):
@@ -50,6 +52,7 @@ class CourseIntro(models.Model):
     materi_intro = models.CharField(max_length = 2000)
     score_consti = models.CharField(max_length = 2000) 
     post_time = models.DateTimeField(auto_now_add = True)
+    classid = models.IntegerField(default=1)
     class Meta:
         db_table = 'CourseIntro'
     def __unicode__(self):
@@ -60,6 +63,7 @@ class TAIntro(models.Model):
     teacher_intro = models.CharField(max_length=2000)
     ta_intro = models.CharField(max_length = 2000)
     post_time = models.DateTimeField(auto_now_add = True)
+    classid = models.IntegerField(default=1)
     class Meta:
         db_table = 'TAIntro'
     def __unicode__(self):
@@ -71,6 +75,7 @@ class Homework(models.Model):
     description = models.CharField(max_length=2000)
     post_time = models.DateTimeField(auto_now_add=True)
     due_time = models.DateTimeField(auto_now_add=False)
+    classid = models.IntegerField(default=4)
     class Meta:
         db_table = 'Homework'
     def __unicode__(self):
@@ -85,10 +90,26 @@ class StudentHomework(models.Model):
     post_time = models.DateTimeField(auto_now_add=True)
     homeworkfile = models.FileField(upload_to=homework_upload_directory_path)
     score = models.DecimalField(max_digits=4,decimal_places=1)
+    classid = models.IntegerField(default=4)
     class Meta:
         db_table = 'StudentHomework'
     def __unicode__(self):
         return self.homeworkfile.name
+
+
+def picture_upload_directory_path(instance,filename):
+        return u'photo/user_{0}'.format(instance.tid)
+
+class mtInfo(models.Model):
+    name=models.CharField(max_length=128)
+    content=models.CharField(max_length=10000)
+    tid=models.CharField(max_length=128,default=0,unique=True)
+    photo=models.ImageField(upload_to=picture_upload_directory_path,default='0')
+    classid=models.IntegerField(default=4)
+    def __unicode__(self):
+        return self.picture.name
+    class Meta:
+        db_table='tInfo'
 
 
 

@@ -6,7 +6,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User, Group
 from pybb.models import Category, Forum, Topic, RenderableItem, Post, Profile, Attachment, TopicReadTrackerManager, \
     TopicReadTracker, ForumReadTrackerManager, ForumReadTracker, PollAnswerUser, PollAnswer
-from SESite.models import Person, Class
+from SESite.models import Person, Class, Classmember
 
 
 class MyAdminSite(AdminSite):
@@ -29,5 +29,6 @@ admin_site.register(PollAnswer)
 admin_site.register(PollAnswerUser)
 admin_site.register(Group)
 admin_site.register(Class)
+admin_site.register(Classmember)
 #admin.site.register(Person)
 #sites.site = mysite

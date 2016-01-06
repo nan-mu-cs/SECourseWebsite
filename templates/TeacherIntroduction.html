@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{%block NavTeacherIntro %}active{% endblock %}
+{% block BodyBlock%}
+<div class="container bs-docs-container">
+    <div class="jumbotron">
+    <head>
+        <title>介绍</title>
+    </head>
+
+    <body>
+        <h1>教师介绍</h1>
+        {% if Info %}
+                {% for info in Info %}
+                    <img src="media/{{info.photo}}" style="float:left;" hight="250" width="125"/>
+                    <h2 class="align-center">
+                    <style>
+                    h2{text-align:left;}
+                    </style>
+                    {{ info.name }}</h2>
+                    <div class="align-center">
+                        {{ info.content }}</div>
+
+                    {% if perms.SESite.can_teach %}
+                        <td><a href="/DeletetInfo?deleteid={{ info.tid }}">删除</a></td>
+
+                    {% endif %}
+                {% endfor %}
+                <br>
+                <br>
+                {% if perms.SESite.can_teach %}
+                    <td><a href="/AddtInfo">添加</a></td>
+                {% endif %}
+
+
+        {% else %}
+            <strong>There are no teacher present.</strong>
+            {% if perms.SESite.can_teach %}
+                <td><a href="/AddtInfo">添加</a></td>
+            {% endif %}
+
+        #{% endif %}
+    </body>
+    </div>
+</div>
+{% endblock %}
+</html>

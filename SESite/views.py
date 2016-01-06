@@ -15,9 +15,10 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.utils.datastructures import MultiValueDictKeyError
-from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm, HomeworkForm
+from SESite.context_classid import classid
+from SESite.forms import PersonUserForm, PersonProfile, CourseMaterialsForm, HomeworkForm, tInfoForm
 from SESite.models import NoticeMessage, mCourseMaterials, TAIntro, CourseIntro, Person, StudentHomework, Homework, \
-    Class, Classmember
+    Class, Classmember, mtInfo
 
 TEACHER = 1
 STUDENT = 2
@@ -118,7 +119,7 @@ def Login(request):
                 return HttpResponse("Your  account is disabled.")
         else:
             # Bad login details were provided. So we can't log the user in.
-            print "Invalid login details: {0}, {1}".format(username, password)
+            print u"Invalid login details: {0}, {1}".format(username, password)
             return HttpResponse("Invalid login details supplied.")
 
     # The request is not a HTTP POST, so display the login form.
@@ -137,12 +138,14 @@ def NoPermission(request):
     return render(request, "NoPermission.html",{})
 
 def NoticeBoard(request):
+    if classid == -1:
+        return HttpResponseRedirect('/ChooseClass');
     #如果是老师
     if request.user.has_perm("SESite.can_teach"):
         #post 提交新内容
         if request.method == 'POST':
             #这样可以直接就插到数据库中了
-            NoticeMessage.objects.create(writer=request.user,message = request.POST['post_message'])
+            NoticeMessage.objects.create(writer=request.user,message = request.POST['post_message'],classid=classid)
         #如果是GET，可能是刷新网页，也可能是点了删除链接
         elif request.method == 'GET':
             try:
@@ -159,7 +162,7 @@ def NoticeBoard(request):
                 messageid = None
     #数据库中现在存在的所有message都get出来
     result = []
-    message_list = NoticeMessage.objects.all()
+    message_list = NoticeMessage.objects.filter(classid=classid)
     message_list.order_by("post_time")
     for item in message_list:
         res = [item.id,item.writer.username,item.message,item.post_time.strftime("%Y-%m-%d %H:%M:%S")]
@@ -178,7 +181,7 @@ def CourseMaterials(request):
             '''检查表单合法性'''
             if form.is_valid():
                 '''将数据存入数据库，会自动存储文件'''
-                newdoc = mCourseMaterials(user=request.user,docfile=request.FILES['docfile'],title=request.FILES['docfile'].name)
+                newdoc = mCourseMaterials(user=request.user,docfile=request.FILES['docfile'],title=request.FILES['docfile'].name,classid=classid)
                 newdoc.save()
                 return HttpResponseRedirect('CourseMaterials')
         elif request.method == 'GET':
@@ -195,7 +198,7 @@ def CourseMaterials(request):
                 fileid = None
     '''普通用GET方法获取网页'''
     form = CourseMaterialsForm()
-    documents = mCourseMaterials.objects.all()
+    documents = mCourseMaterials.objects.filter(classid=classid)
     return render(request,'CourseMaterials.html',{'documents':documents,'form':form})
 
 @receiver(pre_delete, sender=mCourseMaterials)
@@ -262,7 +265,7 @@ def TA_Intro(request):
     if request.user.has_perm("SESite.can_teach"):
         if request.method == 'POST':
 
-            TAIntro.objects.create(writer=request.user,teacher_intro=request.POST['teacher_msg'],ta_intro=request.POST['ta_msg'])
+            TAIntro.objects.create(writer=request.user,teacher_intro=request.POST['teacher_msg'],ta_intro=request.POST['ta_msg'],classid=classid)
             # print pre_intro
             # print message
             # print score_consti
@@ -285,7 +288,7 @@ def TA_Intro(request):
                 teacher_introid = 0
 
     result = []
-    message_list = TAIntro.objects.all()
+    message_list = TAIntro.objects.filter(classid=classid)
     message_list.order_by('post_time')
     # 每次刷新或者输入新的预修要求，会显示最新的要求，历史依旧存在数据库当中
     for item in message_list:
@@ -321,11 +324,11 @@ def AssignHomework(request):
     if request.method == 'POST':
         #这样可以直接就插到数据库中了
         try:
-            tube = StudentHomework.objects.get(id=request.POST['HomeworkID'])
+            tube = StudentHomework.objects.get(id=request.POST['HomeworkID'],classid=classid)
             tube.score = request.POST['score']
             tube.save();
         except MultiValueDictKeyError:
-            Homework.objects.create(assigner=request.user,description = request.POST['post_message'],due_time = request.POST['due_time'],title=request.POST['title'])
+            Homework.objects.create(assigner=request.user,description = request.POST['post_message'],due_time = request.POST['due_time'],title=request.POST['title'],classid=classid)
         #如果是GET，可能是刷新网页，也可能是点了删除链接
     elif request.method == 'GET':
         try:
@@ -342,14 +345,14 @@ def AssignHomework(request):
             messageid = None
     #数据库中现在存在的所有message都get出来
     result = []
-    message_list = Homework.objects.all()
+    message_list = Homework.objects.filter(classid=classid)
     message_list.order_by("post_time")
     for item in message_list:
         res = [item.id,item.assigner,item.description,item.due_time.strftime("%Y-%m-%d %H:%M:%S"),item.title]
         result.append(res)
     result.reverse()
     homeworks = []
-    homeworks_list = StudentHomework.objects.all()
+    homeworks_list = StudentHomework.objects.filter(classid=classid)
     homeworks_list.order_by("homeworkid")
     for item in homeworks_list:
         res = [item.homeworkid_id,item.student_ID, item.homeworkfile,item.score,item.id]
@@ -360,11 +363,11 @@ def AssignHomework(request):
 def Grade(request):
     if request.method == 'POST':
         print(request.POST['HomeworkID'])
-        tube = StudentHomework.objects.get(id=request.POST['HomeworkID'])
+        tube = StudentHomework.objects.get(id=request.POST['HomeworkID'],classid=classid)
         tube.score = request.POST['score']
         tube.save();
-    student_gourp_list=StudentHomework.objects.all().values('student_ID__username').annotate(s_amount = Sum('score'))
-    score_list = StudentHomework.objects.all()
+    student_gourp_list=StudentHomework.objects.filter(classid=classid).values('student_ID__username').annotate(s_amount = Sum('score'))
+    score_list = StudentHomework.objects.filter(classid=classid)
     score_list.order_by("homeworkid_id")
     Sumscore=[]
     ScoreList=[]
@@ -378,7 +381,7 @@ def Grade(request):
 
 def ShowGrade(request):
     result = []
-    message_list = StudentHomework.objects.filter(student_ID=request.user)
+    message_list = StudentHomework.objects.filter(student_ID=request.user,classid=classid)
     message_list.order_by("homeworkid")
     for item in message_list:
         res = [item.homeworkid_id,item.score]
@@ -390,7 +393,7 @@ def HomeworkAndGrades(request):
         form = HomeworkForm(request.POST,request.FILES)
         if form.is_valid():
             homework=Homework.objects.get(id=request.POST['hwid'])
-            newdoc = StudentHomework(student_ID=request.user,homeworkid=homework,homeworkfile=request.FILES['docfile'],score=0)
+            newdoc = StudentHomework(student_ID=request.user,homeworkid=homework,homeworkfile=request.FILES['docfile'],score=0,classid=classid)
             newdoc.save()
             return HttpResponseRedirect('HomeworkAndGrades')
     elif request.method == 'GET':
@@ -408,7 +411,7 @@ def HomeworkAndGrades(request):
             messageid = None
     #数据库中现在存在的所有message都get出来
     result = []
-    message_list = Homework.objects.all()
+    message_list = Homework.objects.filter(classid=classid)
     message_list.order_by("post_time")
     for item in message_list:
         res = [item.id,item.assigner,item.description,item.due_time.strftime("%Y-%m-%d %H:%M:%S"),item.title]
@@ -416,7 +419,7 @@ def HomeworkAndGrades(request):
     result.reverse()
     homeworks = []
     form = HomeworkForm()
-    documents = StudentHomework.objects.filter(student_ID=request.user)
+    documents = StudentHomework.objects.filter(student_ID=request.user,classid=classid)
     for item in documents:
         res = [item.homeworkid_id,item.homeworkfile,item.id]
         homeworks.append(res)
@@ -435,7 +438,11 @@ def ChooseClass(request):
         numofclass_joined = Classmember.objects.filter(member=request.user).count()
         if request.user.has_perm("SESite.can_teach"):
             joined_class = True
-            class_list = Class.objects.filter(teacher=request.user)
+            #class_list = Class.objects.filter(teacher=request.user)
+            class_info = Classmember.objects.filter(member=request.user)
+            class_list = []
+            for item in class_info:
+                class_list.append(item.class_info)
         elif numofclass_joined != 0:
             joined_class = True
             class_set = Classmember.objects.filter(member=request.user)
@@ -454,8 +461,9 @@ def get_classmember(classid):
     for member in classmember:
         username=member.member.username
         person = Person.objects.get(user=member.member)
-        item = {'username':username,'stuid':person.idnum,'id':member.member.id}
-        result.append(item)
+        if person.type == STUDENT:
+            item = {'username':username,'stuid':person.idnum,'id':member.member.id}
+            result.append(item)
     return result
 
 def import_student(request):
@@ -493,3 +501,43 @@ def delete_stu(request):
     User.objects.filter(id=userid).delete()
     return HttpResponseRedirect('/importstudent?classid='+classid)
 
+def AddtInfo(request):
+     if request.method == 'POST':
+        form = tInfoForm(request.POST,request.FILES)
+        if form.is_valid():
+            ta_info = form.save(commit=False)
+            ta_info.classid = classid
+            ta_info.save()
+            return HttpResponseRedirect('/TeacherIntroduction.html')
+        else:
+            print form.errors
+        return render(request,'AddtInfo.html',{'form':form})
+     else:
+        form = tInfoForm()
+     return render(request,'AddtInfo.html',{'form':form})
+def DeletetInfo(request):
+    try:
+        messageid= request.GET['deleteid']
+        mtInfo.objects.get(tid=messageid).photo.delete()
+
+        try:
+            query = mtInfo.objects.get(tid=messageid).delete()
+
+        except mtInfo.DoesNotExist:
+            query = None
+    except MultiValueDictKeyError:
+            messageid = None
+    return HttpResponseRedirect('/TeacherIntroduction.html')
+def TeacherIntroduction(request):
+    try:
+        Info=mtInfo.objects.filter(classid=classid)
+    except mtInfo.DoesNotExist:
+        Info=None
+
+    context_Info={'Info':Info}
+    return render(request,'TeacherIntroduction.html',context_Info)
+
+def join_class(request):
+    global  classid
+    classid = request.GET['classid']
+    return HttpResponseRedirect('/')

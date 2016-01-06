@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+{% extends 'MainTemplate.html' %}
+{% load staticfiles %}
+{% block BodyBlock%}
+<div class="container bs-docs-container">
+    <div class="jumbotron">
+    <head>
+        <title>介绍</title>
+    </head>
+
+    <body>
+        <h1>增加教师介绍</h1>
+
+        <form id="form" method="post" action="/AddtInfo/" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {% for field in form.visible_fields %}
+                {{ field.errors }}
+                <li>{{ field.help_text }}</li>
+                {{ field }}
+            {% endfor %}
+
+            <input type="submit" name="submit" value="Submit" />
+        </form>
+    </body>   </div>
+</div>
+{% endblock %}
+
+</html>

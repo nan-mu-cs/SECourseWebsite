@@ -135,3 +135,5 @@ PYBB_USE_DJANGO_MAILER = False
 POSTMAN_DISABLE_USER_EMAILING = True
 POSTMAN_DISALLOW_ANONYMOUS = True
 POSTMAN_AUTO_MODERATE_AS = True
+
+TEMPLATES[0]['OPTIONS']['context_processors'].append("SESite.context_classid.context_classid")

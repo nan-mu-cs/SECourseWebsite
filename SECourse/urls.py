@@ -48,4 +48,8 @@ urlpatterns = [
     url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
     url(r'^importstudent',views.import_student,name='importstudent'),
     url(r'^deletestu',views.delete_stu,name="deletestu"),
+    url(r'^TeacherIntroduction',views.TeacherIntroduction,name="TeacherIntroduction"),
+    url(r'^AddtInfo',views.AddtInfo,name="AddtInfo"),
+    url(r'^DeletetInfo',views.DeletetInfo,name="DeletetInfo"),
+    url(r'^JoinedClass',views.join_class,name="joinclass"),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
